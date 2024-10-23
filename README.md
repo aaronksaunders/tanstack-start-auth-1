@@ -2,6 +2,9 @@
 
 This project is a basic authentication example using TanStack, Prisma, and TailwindCSS.
 
+## Video
+See walk thpught of application - https://youtu.be/kpjU2nMbZdw
+
 ## Project Structure
 
 
