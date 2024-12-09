@@ -10,7 +10,6 @@ export function Login() {
   const [error, setError] = useState<string | null>(null);
 
   // functions
-  const login = useServerFn(loginFn);
   const signUp = useServerFn(signupFn);
 
   // validation errors
@@ -31,11 +30,19 @@ export function Login() {
       e.preventDefault();
       setError(null); // Clear error message
 
-      const resp = await login(new FormData(e.currentTarget));
+      const { email, password } = e.currentTarget;
+
+      const resp = await loginFn({ data: { email: email.value!, password: password.value! } });
 
       if (resp?.error) {
         setError(resp?.message);
       }
+
+      // Invalidate the router cache and navigate to the home page
+      router.invalidate();
+      router.navigate({
+        to: '/home',
+      });
     } catch (error) {
       console.error('handleSignin', error);
     }
@@ -59,20 +66,23 @@ export function Login() {
       const first_name = e.currentTarget.first_name.value;
       const last_name = e.currentTarget.last_name.value;
 
-      // @TODO: check back later - https://github.com/TanStack/router/issues/1992
-      // bind the signup function so when it throw the redirect it will be handled
-      // properly - BUT THERE IS AN ERROR HERE SO I CANNOT USE useServerFn
-      const value = await signUp({ email, password, first_name, last_name });
+      const value = await signUp({ data: { email, password, first_name, last_name } });
       //
       // const value = await signupFn({ email, password, first_name, last_name });
       if (value?.error) {
         setError(value?.message);
-        const fieldErrors: { [key: string]: string } = {};
-        value.issues?.forEach((issue: any) => {
-          fieldErrors[issue.path[0]] = issue.message;
-        });
-        setErrors(fieldErrors);
+        // const fieldErrors: { [key: string]: string } = {};
+        // value.issues?.forEach((issue: any) => {
+        //   fieldErrors[issue.path[0]] = issue.message;
+        // });
+        // setErrors(fieldErrors);
       }
+
+      // Invalidate the router cache and navigate to the home page
+      router.invalidate();
+      router.navigate({
+        to: '/home',
+      });
     } catch (error) {
       console.error('handleSignup', error);
       alert('An error occurred. Please try again.' + (error as any).message);
